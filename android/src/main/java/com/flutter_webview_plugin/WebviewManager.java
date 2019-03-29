@@ -171,6 +171,14 @@ class WebviewManager {
                 activity.startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
                 return true;
             }
+
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                Map<String, Object> data = new HashMap<>();
+                data.put("title", title);
+                FlutterWebviewPlugin.channel.invokeMethod("onTitleReceived", data);
+            }
         });
     }
 
