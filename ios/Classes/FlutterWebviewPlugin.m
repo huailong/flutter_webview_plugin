@@ -69,6 +69,9 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     } else if ([@"reload" isEqualToString:call.method]) {
         [self reload];
         result(nil);
+    } else if ([@"registerHandlers" isEqualToString:call.method]) {
+
+        result(nil);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -112,11 +115,27 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     self.webview.scrollView.showsHorizontalScrollIndicator = [scrollBar boolValue];
     self.webview.scrollView.showsVerticalScrollIndicator = [scrollBar boolValue];
 
+    [self.webview addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:NULL];
+
     _enableZoom = [withZoom boolValue];
 
     [self.viewController.view addSubview:self.webview];
 
     [self navigate:call];
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{
+ if ([keyPath isEqualToString:@"title"]) {
+        if (object == self.webview) {
+            id data = @{@"title": self.webview.title};
+                    [channel invokeMethod:@"onTitleReceived" arguments:data];
+         } else {
+            [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+         }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+
 }
 
 - (CGRect)parseRect:(NSDictionary *)rect {

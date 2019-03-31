@@ -2,9 +2,10 @@ package com.flutter_webview_plugin;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.webkit.WebView;
 
-public class ObservableWebView extends WebView {
+import com.flutter_webview_plugin.bridge.BridgeWebView;
+
+public class ObservableWebView extends BridgeWebView {
     private OnScrollChangedCallback mOnScrollChangedCallback;
 
     public ObservableWebView(final Context context)

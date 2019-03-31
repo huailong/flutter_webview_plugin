@@ -11,6 +11,7 @@ import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.os.Build;
 
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
@@ -76,6 +77,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
                 break;
             case "cleanCookies":
                 cleanCookies(call, result);
+                break;
+            case "registerHandlers":
+                registerHandlers(call, result);
+                break;
+            case "callHandler":
+                callHandler(call, result);
                 break;
             default:
                 result.notImplemented();
@@ -236,6 +243,24 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         } else {
             CookieManager.getInstance().removeAllCookie();
         }
+        result.success(null);
+    }
+
+    private void registerHandlers(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            webViewManager.registerHandlers((List<String>) call.argument("methods"));
+        }
+
+        result.success(null);
+    }
+
+    private void callHandler(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            String handlerName = call.argument("handler");
+            String javaData = call.argument("data");
+            webViewManager.callHandler(handlerName, javaData);
+        }
+
         result.success(null);
     }
 

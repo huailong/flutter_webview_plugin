@@ -31,6 +31,13 @@ class FlutterWebviewPlugin {
   final _onHttpError = StreamController<WebViewHttpError>.broadcast();
   final _onTitleReceived = StreamController<String>.broadcast();
 
+  // H5调用到flutter
+  final _onLogin = StreamController<String>.broadcast();
+  final _onReLogin = StreamController<Null>.broadcast();
+  final _jump = StreamController<String>.broadcast();
+  final _hideTitle = StreamController<Null>.broadcast();
+  final _titleMenu = StreamController<String>.broadcast();
+
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
       case 'onDestroy':
@@ -58,6 +65,21 @@ class FlutterWebviewPlugin {
       case 'onTitleReceived':
         _onTitleReceived.add(call.arguments['title']);
         break;
+      case 'login':
+        _onLogin.add(call.arguments);
+        break;
+      case 'jump':
+        _jump.add(call.arguments);
+        break;
+      case 'hide_title':
+        _hideTitle.add(call.arguments);
+        break;
+      case 'title_menu':
+        _titleMenu.add(call.arguments);
+        break;
+      case 'relogin':
+        _onReLogin.add(null);
+        break;
     }
   }
 
@@ -81,6 +103,16 @@ class FlutterWebviewPlugin {
   Stream<WebViewHttpError> get onHttpError => _onHttpError.stream;
 
   Stream<String> get onTitleReceived => _onTitleReceived.stream;
+
+  Stream<String> get onLogin => _onLogin.stream;
+
+  Stream<Null> get onReLogin => _onReLogin.stream;
+
+  Stream<String> get jump => _jump.stream;
+
+  Stream<Null> get hideTitle => _hideTitle.stream;
+
+  Stream<String> get titleMenu => _titleMenu.stream;
 
   /// Start the Webview with [url]
   /// - [headers] specify additional HTTP headers
@@ -175,6 +207,11 @@ class FlutterWebviewPlugin {
 
   // Shows the webview
   Future<Null> show() async => await _channel.invokeMethod('show');
+
+  Future<Null> registerHandlers(List<String> handlers) async {
+    final args = <String, List<String>>{'methods': handlers};
+    await _channel.invokeMethod('registerHandlers', args);
+  }
 
   // Reload webview with a url
   Future<Null> reloadUrl(String url) async {
