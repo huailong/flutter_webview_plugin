@@ -6,6 +6,9 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.flutter_webview_plugin.bridge.BridgeWebView;
+import com.flutter_webview_plugin.bridge.BridgeWebViewClient;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +16,9 @@ import java.util.Map;
  * Created by lejard_h on 20/12/2017.
  */
 
-public class BrowserClient extends WebViewClient {
-    public BrowserClient() {
-        super();
+public class BrowserClient extends BridgeWebViewClient {
+    public BrowserClient(BridgeWebView webView) {
+        super(webView);
     }
 
     @Override

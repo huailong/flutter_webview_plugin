@@ -1,6 +1,7 @@
 package com.flutter_webview_plugin.bridge;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -46,6 +47,7 @@ public class BridgeWebViewClient extends WebViewClient {
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
 
+        Log.e("zhanhl", "onPageFinished: " + url);
         BridgeUtil.webViewLoadLocalJs(view, BridgeWebView.toLoadJs);
 
         if (webView.getStartupMessage() != null) {

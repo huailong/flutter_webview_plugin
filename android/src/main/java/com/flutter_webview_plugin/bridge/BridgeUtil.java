@@ -69,7 +69,7 @@ public class BridgeUtil {
 
     public static void webViewLoadLocalJs(WebView view, String path) {
         String jsContent = assetFile2Str(view.getContext(), path);
-        view.loadUrl("javascript:" + jsContent);
+        view.loadUrl(JAVASCRIPT_STR + jsContent);
     }
 
     public static String assetFile2Str(Context c, String urlStr) {

@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
@@ -20,6 +22,7 @@ import android.widget.FrameLayout;
 import com.biz.BridgeUtils;
 import com.flutter_webview_plugin.bridge.BridgeUtil;
 import com.flutter_webview_plugin.bridge.BridgeWebView;
+import com.flutter_webview_plugin.bridge.BridgeWebViewClient;
 import com.flutter_webview_plugin.bridge.CallBackFunction;
 import com.flutter_webview_plugin.bridge.JsBridgeResult;
 import com.flutter_webview_plugin.bridge.handler.JavaCallHandler;
@@ -90,7 +93,6 @@ class WebviewManager {
         this.webView = new ObservableWebView(activity);
         this.activity = activity;
         this.resultHandler = new ResultHandler();
-        WebViewClient webViewClient = new BrowserClient();
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -121,7 +123,8 @@ class WebviewManager {
             }
         });
 
-        webView.setWebViewClient(webViewClient);
+        webView.setWebViewClient(new BrowserClient(webView));
+
         webView.setWebChromeClient(new WebChromeClient() {
             //The undocumented magic method override
             //Eclipse will swear at you if you try to put @Override here
@@ -186,6 +189,12 @@ class WebviewManager {
                 Map<String, Object> data = new HashMap<>();
                 data.put("title", title);
                 FlutterWebviewPlugin.channel.invokeMethod("onTitleReceived", data);
+            }
+
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                Log.d("zhanhl", "console:  " + consoleMessage.message());
+                return super.onConsoleMessage(consoleMessage);
             }
         });
     }
@@ -324,6 +333,7 @@ class WebviewManager {
             @Override
             public void onHandle(String handlerName, String responseData, final CallBackFunction function) {
                 // Js调用注册的方法，需要原生处理的方法跳转原生Activity处理，否则透传到Flutter层进行处理！
+                Log.d("zhanhl", "onHandle:  " + handlerName);
                 if (handleNative(handlerName, responseData, function)) {
                     return;
                 }
@@ -406,6 +416,7 @@ class WebviewManager {
      * Reloads the Webview.
      */
     void reload(MethodCall call, MethodChannel.Result result) {
+        Log.d("zhanhl", "reload:  ");
         if (webView != null) {
             webView.reload();
         }

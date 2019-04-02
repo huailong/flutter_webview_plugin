@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.Display;
 import android.widget.FrameLayout;
 import android.webkit.CookieManager;
@@ -41,6 +42,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
     @Override
     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+        Log.e("zhanhl", "onMethodCall: " + call.method);
         switch (call.method) {
             case "launch":
                 openUrl(call, result);

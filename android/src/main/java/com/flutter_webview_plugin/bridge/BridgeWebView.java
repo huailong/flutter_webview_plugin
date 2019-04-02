@@ -24,6 +24,8 @@ import java.util.Map;
 public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
 
     private final String TAG = "BridgeWebView";
+    static final String UA = "@app/12345";
+    static final String HEAD = "http://cloud.city";
 
     public static final String toLoadJs = "WebViewJavascriptBridge.js";
     Map<String, CallBackFunction> responseCallbacks = new HashMap<>();
@@ -68,9 +70,11 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
     private void init() {
         this.setVerticalScrollBarEnabled(false);
         this.setHorizontalScrollBarEnabled(false);
-        this.getSettings().setJavaScriptEnabled(true);
-        this.getSettings().setBlockNetworkImage(false);//解决图片不显示
-        this.getSettings().setAllowFileAccess(true);
+        WebSettings settings = getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setBlockNetworkImage(false);//解决图片不显示
+        settings.setAllowFileAccess(true);
+        settings.setUserAgentString(settings.getUserAgentString() + UA);
         if (Build.VERSION.SDK_INT >= 16) {
             this.getSettings().setAllowFileAccessFromFileURLs(true);
             this.getSettings().setAllowUniversalAccessFromFileURLs(true);
@@ -81,14 +85,15 @@ public class BridgeWebView extends WebView implements WebViewJavascriptBridge {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
-        this.setWebViewClient(generateBridgeWebViewClient());
+
+//        this.setWebViewClient(generateBridgeWebViewClient());
 
         SPUtils.bindContext(getContext());
     }
 
-    protected BridgeWebViewClient generateBridgeWebViewClient() {
-        return new BridgeWebViewClient(this);
-    }
+//    protected BridgeWebViewClient generateBridgeWebViewClient() {
+//        return new BridgeWebViewClient(this);
+//    }
 
     void handlerReturnData(String url) {
         String functionName = BridgeUtil.getFunctionFromReturnUrl(url);
