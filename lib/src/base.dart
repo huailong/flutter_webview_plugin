@@ -34,9 +34,14 @@ class FlutterWebviewPlugin {
   // H5调用到flutter
   final _onLogin = StreamController<String>.broadcast();
   final _onReLogin = StreamController<Null>.broadcast();
+  final _onLoginOut = StreamController<Null>.broadcast();
   final _jump = StreamController<String>.broadcast();
   final _hideTitle = StreamController<Null>.broadcast();
   final _titleMenu = StreamController<String>.broadcast();
+
+  final _onShare = StreamController<String>.broadcast();
+  final _onWechatPay = StreamController<String>.broadcast();
+  final _onWechatLogin = StreamController<String>.broadcast();
 
   Future<Null> _handleMessages(MethodCall call) async {
     switch (call.method) {
@@ -80,6 +85,18 @@ class FlutterWebviewPlugin {
       case 'relogin':
         _onReLogin.add(null);
         break;
+      case 'login_out':
+        _onLoginOut.add(null);
+        break;
+      case 'share':
+        _onShare.add(call.arguments);
+        break;
+      case 'wechat_pay':
+        _onWechatPay.add(call.arguments);
+        break;
+      case 'wechat_login':
+        _onWechatLogin.add(call.arguments);
+        break;
     }
   }
 
@@ -108,11 +125,19 @@ class FlutterWebviewPlugin {
 
   Stream<Null> get onReLogin => _onReLogin.stream;
 
+  Stream<Null> get onLoginOut => _onLoginOut.stream;
+
   Stream<String> get jump => _jump.stream;
 
   Stream<Null> get hideTitle => _hideTitle.stream;
 
   Stream<String> get titleMenu => _titleMenu.stream;
+
+  Stream<String> get share => _onShare.stream;
+
+  Stream<String> get wechatPay => _onWechatPay.stream;
+
+  Stream<Null> get wechatLogin => _onWechatLogin.stream;
 
   /// Start the Webview with [url]
   /// - [headers] specify additional HTTP headers

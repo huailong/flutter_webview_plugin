@@ -318,11 +318,6 @@ class WebviewManager {
         handlerNames.add("cache_put");
         handlerNames.add("cache_get");
 
-        handlerNames.add("wechat_login");
-
-        handlerNames.add("share");
-
-        handlerNames.add("wechat_pay");
         handlerNames.add("alipay");
 
         handlerNames.add("telphone");
@@ -357,19 +352,6 @@ class WebviewManager {
         if ("cache_get".equals(handlerName)) {
             String data = BridgeUtils.getCache(responseData);
             function.onCallBack(JsBridgeResult.generateSuccessResult(data));
-            return true;
-        }
-
-        if ("wechat_login".equals(handlerName)) {
-
-            return true;
-        }
-
-        if ("share".equals(handlerName)) {
-            return true;
-        }
-
-        if ("wechat_pay".equals(handlerName)) {
             return true;
         }
 
