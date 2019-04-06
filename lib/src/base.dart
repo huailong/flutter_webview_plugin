@@ -137,7 +137,7 @@ class FlutterWebviewPlugin {
 
   Stream<String> get wechatPay => _onWechatPay.stream;
 
-  Stream<Null> get wechatLogin => _onWechatLogin.stream;
+  Stream<String> get wechatLogin => _onWechatLogin.stream;
 
   /// Start the Webview with [url]
   /// - [headers] specify additional HTTP headers
