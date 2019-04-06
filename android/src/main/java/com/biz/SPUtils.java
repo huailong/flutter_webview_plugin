@@ -14,7 +14,7 @@ public class SPUtils {
         sContext = context.getApplicationContext();
     }
 
-    private static final String SP_FILE_NAME = "E8BB9FB9D937BF6399C97CA28CF439EE";
+    private static final String SP_FILE_NAME = "FlutterSharedPreferences";
 
     public static String getString(String key) {
         return getString(key, "");
