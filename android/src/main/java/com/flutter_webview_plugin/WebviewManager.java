@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import com.biz.BridgeUtils;
+import com.biz.SPUtils;
 import com.flutter_webview_plugin.bridge.BridgeUtil;
 import com.flutter_webview_plugin.bridge.BridgeWebView;
 import com.flutter_webview_plugin.bridge.BridgeWebViewClient;
@@ -27,6 +29,9 @@ import com.flutter_webview_plugin.bridge.CallBackFunction;
 import com.flutter_webview_plugin.bridge.JsBridgeResult;
 import com.flutter_webview_plugin.bridge.handler.JavaCallHandler;
 import com.flutter_webview_plugin.bridge.handler.JsHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -318,6 +323,9 @@ class WebviewManager {
         handlerNames.add("cache_put");
         handlerNames.add("cache_get");
 
+        handlerNames.add("pick");
+        handlerNames.add("photo");
+
         handlerNames.add("alipay");
 
         handlerNames.add("telphone");
@@ -334,7 +342,7 @@ class WebviewManager {
                 }
 
                 FlutterWebviewPlugin.channel.invokeMethod(handlerName, responseData);
-                function.onCallBack(JsBridgeResult.generateSuccessResult(""));
+                function.onCallBack(JsBridgeResult.generateSuccessResult(handlerName + "调用成功"));
             }
         });
     }
@@ -356,18 +364,55 @@ class WebviewManager {
         }
 
         if ("alipay".equals(handlerName)) {
+            function.onCallBack(JsBridgeResult.generateFailResult("暂不支持阿里支付!"));
             return true;
         }
 
         if ("telphone".equals(handlerName)) {
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(responseData);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            callPhone(jsonObject.optString("tel"));
+
             return true;
         }
 
         if ("location".equals(handlerName)) {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("longitude", SPUtils.getString("key_gps_longitude"));
+                jsonObject.put("latitude", SPUtils.getString("key_gps_latitude"));
+            } catch (JSONException e) {
+            }
+
+            function.onCallBack(JsBridgeResult.generateSuccessResult(jsonObject.toString()));
+            return true;
+        }
+
+        if ("pick".equals(handlerName)) {
+            function.onCallBack(JsBridgeResult.generateFailResult("暂不支持图片选择!"));
+            return true;
+        }
+
+        if ("photo".equals(handlerName)) {
+            function.onCallBack(JsBridgeResult.generateFailResult("暂不支持相机拍照!"));
             return true;
         }
 
         return false;
+    }
+
+    private void callPhone(String tel) {
+        if (TextUtils.isDigitsOnly(tel)) {
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            Uri data = Uri.parse("tel:" + tel);
+            intent.setData(data);
+            webView.getContext().startActivity(intent);
+        }
     }
 
     void callHandler(String handlerName, String javaData) {
