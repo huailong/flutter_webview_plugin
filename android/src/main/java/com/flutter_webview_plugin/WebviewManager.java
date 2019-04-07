@@ -337,12 +337,13 @@ class WebviewManager {
             public void onHandle(String handlerName, String responseData, final CallBackFunction function) {
                 // Js调用注册的方法，需要原生处理的方法跳转原生Activity处理，否则透传到Flutter层进行处理！
                 Log.d("zhanhl", "onHandle:  " + handlerName);
+                Log.d("zhanhl", "onHandle:  " + responseData);
                 if (handleNative(handlerName, responseData, function)) {
                     return;
                 }
 
                 FlutterWebviewPlugin.channel.invokeMethod(handlerName, responseData);
-                function.onCallBack(JsBridgeResult.generateSuccessResult(handlerName + "调用成功"));
+//                function.onCallBack(JsBridgeResult.generateSuccessResult(handlerName + "调用成功"));
             }
         });
     }

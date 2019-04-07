@@ -89,6 +89,7 @@ class FlutterWebviewPlugin {
         _onLoginOut.add(null);
         break;
       case 'share':
+        print('share....' + call.arguments);
         _onShare.add(call.arguments);
         break;
       case 'wechat_pay':
