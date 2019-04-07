@@ -86,6 +86,9 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "callHandler":
                 callHandler(call, result);
                 break;
+            case "callback":
+                callback(call, result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -261,6 +264,16 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             String handlerName = call.argument("handler");
             String javaData = call.argument("data");
             webViewManager.callHandler(handlerName, javaData);
+        }
+
+        result.success(null);
+    }
+
+    private void callback(MethodCall call, final MethodChannel.Result result) {
+        if (webViewManager != null) {
+            String handlerName = call.argument("handler");
+            String handlerResult = call.argument("result");
+            webViewManager.callback(handlerName, handlerResult);
         }
 
         result.success(null);

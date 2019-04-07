@@ -17,14 +17,11 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import com.biz.BridgeUtils;
 import com.biz.SPUtils;
-import com.flutter_webview_plugin.bridge.BridgeUtil;
 import com.flutter_webview_plugin.bridge.BridgeWebView;
-import com.flutter_webview_plugin.bridge.BridgeWebViewClient;
 import com.flutter_webview_plugin.bridge.CallBackFunction;
 import com.flutter_webview_plugin.bridge.JsBridgeResult;
 import com.flutter_webview_plugin.bridge.handler.JavaCallHandler;
@@ -33,6 +30,7 @@ import com.flutter_webview_plugin.bridge.handler.JsHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +50,8 @@ class WebviewManager {
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageArray;
     private final static int FILECHOOSER_RESULTCODE = 1;
+
+    Map<String, SoftReference<CallBackFunction>>  handlerCallbackMap = new HashMap<>();
 
     @TargetApi(7)
     class ResultHandler {
@@ -342,6 +342,11 @@ class WebviewManager {
                     return;
                 }
 
+                if ("wechat_login".equals(handlerName)) {
+                    Log.w("zhanhl", handlerName + ", " + function);
+                }
+
+              handlerCallbackMap.put(handlerName, new SoftReference<>(function));
                 FlutterWebviewPlugin.channel.invokeMethod(handlerName, responseData);
 //                function.onCallBack(JsBridgeResult.generateSuccessResult(handlerName + "调用成功"));
             }
@@ -426,6 +431,15 @@ class WebviewManager {
                 FlutterWebviewPlugin.channel.invokeMethod("onJsHandle", data);
             }
         });
+    }
+
+    void callback(String handlerName, String result) {
+        SoftReference<CallBackFunction> functionRef = handlerCallbackMap.get(handlerName);
+        if (functionRef != null) {
+            CallBackFunction function = functionRef.get();
+            function.onCallBack(result);
+            handlerCallbackMap.remove(handlerName);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)

@@ -239,6 +239,12 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod('registerHandlers', args);
   }
 
+  // Flutter回调数据给原生
+  Future<Null> callback(String handlerName, String result) async {
+    final args = <String, String> {'handler' : handlerName, 'result' : result};
+    await _channel.invokeMethod('callback', args);
+  }
+
   // Reload webview with a url
   Future<Null> reloadUrl(String url) async {
     final args = <String, String>{'url': url};
